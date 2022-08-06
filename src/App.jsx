@@ -20,7 +20,7 @@ function App() {
   };
 
   const copy = (e) => {
-    navigator.clipboard.writeText(e.target.textContent);
+    navigator.clipboard.writeText(e.currentTarget.children[1].textContent);
     alert("Text copied to keyboard");
   };
 
@@ -40,14 +40,15 @@ function App() {
       </form>
       <section className="colors">
         {colorList.map((color, index) => {
-          const { rgb } = color;
+          const { rgb, weight } = color;
           return (
             <article key={index}>
               <div
                 style={{ background: `rgb(${rgb.join(",")})` }}
                 onClick={copy}
               >
-                #{rgbToHex(rgb).join("").toLocaleLowerCase()}
+                <p style={{ marginBottom: "8px" }}>{weight} %</p>
+                <p>#{rgbToHex(rgb).join("").toLocaleLowerCase()}</p>
               </div>
             </article>
           );
