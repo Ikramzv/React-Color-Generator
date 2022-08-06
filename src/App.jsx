@@ -1,11 +1,8 @@
 import React from "react";
-import { useEffect } from "react";
 import { useState } from "react";
 import Value from "values.js";
 import "./styles.css";
 import { rgbToHex } from "./convertRgbToHex";
-
-console.log(rgbToHex([255, 222, 211]).join("").toLocaleLowerCase());
 
 function App() {
   const [color, setColor] = useState("");
