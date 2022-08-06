@@ -1,76 +1,62 @@
 import React from "react";
-import { data } from "./data";
-import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
-import { FaQuoteRight } from "react-icons/fa";
-import { useState } from "react";
 import { useEffect } from "react";
+import { useState } from "react";
+import Value from "values.js";
 import "./styles.css";
+import { rgbToHex } from "./convertRgbToHex";
+
+console.log(rgbToHex([255, 222, 211]).join("").toLocaleLowerCase());
 
 function App() {
-  const [people, setPeople] = useState(data);
-  const [index, setIndex] = useState(0);
-  useEffect(() => {
-    let slider = setInterval(() => {
-      setIndex((prev) => (prev < people.length - 1 ? prev + 1 : (prev = 0)));
-    }, 3000);
-    return () => clearInterval(slider);
-  }, [index]);
+  const [color, setColor] = useState("");
+  const [colorList, setColorList] = useState([]);
+  const [error, setError] = useState("");
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    try {
+      setError("");
+      const newColor = new Value(color);
+      setColorList(newColor.all());
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const copy = (e) => {
+    navigator.clipboard.writeText(e.target.textContent);
+    alert("Text copied to keyboard");
+  };
 
   return (
-    <section className="section">
-      <div className="title">
-        <h2>
-          <span>/</span> reviews
-        </h2>
-      </div>
-      <div className="section-center">
-        {people.map((p, personIndex) => {
-          const { id, image, name, title, quote } = p;
-          let position = "nextSlide";
-          if (index === personIndex) {
-            position = "activeSlide";
-          }
-
-          if (personIndex === index - 1) {
-            position = "lastSlide";
-          }
-
-          if (index === 0 && personIndex === people.length - 1) {
-            position = "lastSlide";
-          }
+    <div className="container">
+      <form onSubmit={handleSubmit}>
+        <h1 className="title">Color generator : </h1>
+        <input
+          type="text"
+          name="color"
+          placeholder="#222"
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+          className={`${error ? "error" : ""}`}
+        />
+        <button type="submit">Generate</button>
+      </form>
+      <section className="colors">
+        {colorList.map((color, index) => {
+          const { rgb } = color;
           return (
-            <article className={position} key={id}>
-              <img src={image} alt={name} className="person-img" />
-              <h4>{name}</h4>
-              <p className="title">{title}</p>
-              <p className="text">{quote}</p>
-              <FaQuoteRight className="icon" fill="crimson" />
+            <article key={index}>
+              <div
+                style={{ background: `rgb(${rgb.join(",")})` }}
+                onClick={copy}
+              >
+                #{rgbToHex(rgb).join("").toLocaleLowerCase()}
+              </div>
             </article>
           );
         })}
-
-        <button
-          className="prev"
-          onClick={() =>
-            setIndex((prev) =>
-              prev > 0 ? prev - 1 : (prev = people.length - 1)
-            )
-          }
-        >
-          <FiChevronLeft />
-        </button>
-        <button
-          className="next"
-          onClick={() =>
-            setIndex((prev) =>
-              prev < people.length - 1 ? prev + 1 : (prev = 0)
-            )
-          }
-        >
-          <FiChevronRight />
-        </button>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }
 
